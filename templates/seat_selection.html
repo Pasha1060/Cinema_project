@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Выбор мест{% endblock %}
+
+{% block content %}
+
+<section class="section">
+    {% csrf_token %}
+
+    <h1>Выбор мест</h1>
+
+    <div class="session-info">
+        <p><strong>Фильм:</strong> {{ session.movie.title }}</p>
+        <p><strong>Сеанс:</strong> {{ session.start_time|date:"d.m.Y H:i" }}</p>
+        <p><strong>Зал:</strong> {{ session.hall.name }}</p>
+        <p><strong>Цена:</strong> {{ session.price }} ₽</p>
+    </div>
+
+    <div class="screen">Экран</div>
+
+    <div class="seat-map">
+        {% regroup seats by row_number as rows %}
+
+        {% for row in rows %}
+            <div class="seat-row">
+                <span class="row-label">Ряд {{ row.grouper }}</span>
+
+                <div class="seat-row-buttons" style="--seats-per-row: {{ session.hall.seats_per_row }};">
+                    {% for seat in row.list %}
+                        {% if seat.id in booked_seat_ids %}
+                            <button
+                                class="seat booked"
+                                disabled
+                                data-seat-id="{{ seat.id }}"
+                                data-row="{{ seat.row_number }}"
+                                data-number="{{ seat.seat_number }}"
+                                title="Место забронировано"
+                            >
+                                {{ seat.seat_number }}
+                            </button>
+                        {% elif seat.id in temporary_locked_seat_ids %}
+                            <button
+                                class="seat temporary-selected"
+                                disabled
+                                data-seat-id="{{ seat.id }}"
+                                data-row="{{ seat.row_number }}"
+                                data-number="{{ seat.seat_number }}"
+                                title="Место временно выбрано другим пользователем"
+                            >
+                                {{ seat.seat_number }}
+                            </button>
+                        {% else %}
+                            <button
+                                class="seat free"
+                                data-seat-id="{{ seat.id }}"
+                                data-row="{{ seat.row_number }}"
+                                data-number="{{ seat.seat_number }}"
+                                title="Место свободно"
+                            >
+                                {{ seat.seat_number }}
+                            </button>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="legend">
+        <span><span class="legend-box free"></span> Свободно</span>
+        <span><span class="legend-box selected"></span> Выбрано вами</span>
+        <span><span class="legend-box temporary-selected"></span> Выбрано другим пользователем</span>
+        <span><span class="legend-box booked"></span> Забронировано</span>
+    </div>
+
+    <div class="booking-panel">
+        <p>
+            <strong>Выбранные места:</strong>
+            <span id="selected-seats-text">не выбраны</span>
+        </p>
+
+        <p>
+            <strong>Итоговая стоимость:</strong>
+            <span id="total-price">0</span> ₽
+        </p>
+
+        {% if booking_available %}
+            <button class="button" id="booking-button">
+                {% if user.is_authenticated %}
+                    Забронировать
+                {% else %}
+                    Войти для бронирования
+                {% endif %}
+            </button>
+        {% else %}
+            <button class="button" id="booking-button" disabled>
+                Сеанс уже начался или прошел
+            </button>
+        {% endif %}
+    </div>
+    <div
+        id="seat-page-data"
+        data-session-id="{{ session.id }}"
+        data-is-authenticated="{{ user.is_authenticated|yesno:'true,false' }}"
+        data-ticket-price="{{ session.price|stringformat:'f' }}"
+        data-booking-available="{{ booking_available|yesno:'true,false' }}"
+        data-login-url="{% url 'cinema:login' %}"
+        data-current-path="{{ request.path }}"
+        data-create-booking-url="{% url 'cinema:create_booking' session.id %}">
+    </div>
+</section>
+
+<script src="{% static 'js/seat_selection.js' %}"></script>
+
+{% endblock %}

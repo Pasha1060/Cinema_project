@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <h1>Кинотеатр</h1>
+    <p>Просматривайте афишу, выбирайте сеансы и бронируйте места онлайн.</p>
+    <a href="{% url 'cinema:movies_list' %}" class="button">Перейти к афише</a>
+</section>
+
+<section class="section">
+    <h2>Популярные фильмы</h2>
+
+    <div class="movie-grid">
+        {% for movie in movies %}
+            <div class="movie-card">
+                {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                {% endif %}
+
+                <h3>{{ movie.title }}</h3>
+                <p>{{ movie.duration }} мин.</p>
+                <a href="{% url 'cinema:movie_detail' movie.id %}" class="button">Подробнее</a>
+            </div>
+        {% empty %}
+            <p>Фильмы пока не добавлены.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section">
+    <h2>Ближайшие сеансы</h2>
+
+    <div class="session-list">
+        {% for session in sessions %}
+            <div class="session-card session-card-main">
+                <strong>{{ session.movie.title }}</strong>
+                <span>{{ session.start_time|date:"d.m.Y H:i" }}</span>
+                <span>{{ session.hall.name }}</span>
+                <span>{{ session.price }} ₽</span>
+                <a href="{% url 'cinema:seat_selection' session.id %}" class="button">Выбрать места</a>
+            </div>
+        {% empty %}
+            <p>Сеансы пока не добавлены.</p>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

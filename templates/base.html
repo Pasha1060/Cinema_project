@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Кинотеатр{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container header-content">
+        <a href="{% url 'cinema:index' %}" class="logo">Кинотеатр</a>
+
+        <nav class="nav">
+            <a href="{% url 'cinema:index' %}">Главная</a>
+            <a href="{% url 'cinema:movies_list' %}">Афиша</a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'cinema:profile' %}">Личный кабинет</a>
+
+                {% if user.is_staff %}
+                    <a href="/admin/">Админ-панель</a>
+                {% endif %}
+
+                <a href="{% url 'cinema:logout' %}">Выход</a>
+            {% else %}
+                <a href="{% url 'cinema:login' %}">Вход</a>
+                <a href="{% url 'cinema:register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>Кинотеатр</p>
+    </div>
+</footer>
+
+</body>
+</html>

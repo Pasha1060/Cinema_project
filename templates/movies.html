@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Афиша{% endblock %}
+
+{% block content %}
+
+<section class="section">
+    <h1>Афиша</h1>
+
+    <div class="movie-grid">
+        {% for movie in movies %}
+            <div class="movie-card">
+                {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}">
+                {% endif %}
+
+                <h3>{{ movie.title }}</h3>
+
+                <p>
+                    {% for genre in movie.genres.all %}
+                        {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        Жанры не указаны
+                    {% endfor %}
+                </p>
+
+                <p>{{ movie.duration }} мин. / {{ movie.age_limit }}</p>
+
+                <a href="{% url 'cinema:movie_detail' movie.id %}" class="button">Подробнее</a>
+            </div>
+        {% empty %}
+            <p>Фильмы пока не добавлены.</p>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

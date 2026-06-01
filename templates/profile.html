@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+
+<section class="section">
+    <h1>Личный кабинет</h1>
+
+    <div class="profile-info">
+        <p><strong>Пользователь:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email|default:"не указан" }}</p>
+    </div>
+</section>
+
+<section class="section">
+    <h2>Мои бронирования</h2>
+
+    {% if bookings %}
+        <div class="booking-table-wrapper">
+            <table class="booking-table">
+                <thead>
+                    <tr>
+                        <th>Фильм</th>
+                        <th>Дата и время</th>
+                        <th>Зал</th>
+                        <th>Статус</th>
+                        <th>Места</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>
+                                <strong>{{ booking.session.movie.title }}</strong>
+                            </td>
+
+                            <td>
+                                {{ booking.session.start_time|date:"d.m.Y H:i" }}
+                            </td>
+
+                            <td>
+                                {{ booking.session.hall.name }}
+                            </td>
+
+                            <td>
+                                {{ booking.get_status_display }}
+                            </td>
+
+                            <td>
+                                <div class="booking-seats-list">
+                                    {% for booking_seat in booking.booking_seats.all %}
+                                        <span class="booking-seat">
+                                            ряд {{ booking_seat.seat.row_number }}, место {{ booking_seat.seat.seat_number }}
+                                        </span>
+                                    {% empty %}
+                                        <span>не указаны</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+
+                            <td>
+                                {% if booking.can_cancel %}
+                                    <form method="post" action="{% url 'cinema:cancel_booking' booking.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="button cancel-button">
+                                            Отменить
+                                        </button>
+                                    </form>
+                                {% elif booking.status == 'cancelled' %}
+                                    <span class="booking-action-muted">Отменено</span>
+                                {% else %}
+                                    <span class="booking-action-muted">Отмена недоступна</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>У вас пока нет бронирований.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

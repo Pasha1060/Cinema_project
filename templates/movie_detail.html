@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }}{% endblock %}
+
+{% block content %}
+
+<section class="movie-detail">
+    <div>
+        {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="detail-poster">
+        {% endif %}
+    </div>
+
+    <div>
+        <h1>{{ movie.title }}</h1>
+
+        <p><strong>Жанры:</strong>
+            {% for genre in movie.genres.all %}
+                {{ genre.name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                не указаны
+            {% endfor %}
+        </p>
+
+        <p><strong>Длительность:</strong> {{ movie.duration }} мин.</p>
+        <p><strong>Возрастное ограничение:</strong> {{ movie.age_limit }}</p>
+        <p>{{ movie.description }}</p>
+    </div>
+</section>
+
+<section class="section">
+    <h2>Доступные сеансы</h2>
+
+    {% if sessions %}
+        <div class="sessions-list">
+            {% for session in sessions %}
+                <div class="session-card">
+                    <span>{{ session.start_time|date:"d.m.Y H:i" }}</span>
+                    <span>{{ session.hall.name }}</span>
+                    <span>{{ session.price }} ₽</span>
+                    <a href="{% url 'cinema:seat_selection' session.id %}" class="button">
+                        Выбрать места
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-message">
+            На данный фильм пока нет доступных сеансов.
+        </p>
+    {% endif %}
+    </div>
+</section>
+
+{% endblock %}
