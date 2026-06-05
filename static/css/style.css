@@ -67,9 +67,12 @@ body {
 }
 
 .movie-card {
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px;
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 16px;
     background: #fafafa;
 }
 
@@ -90,6 +93,8 @@ body {
     border-radius: 6px;
     text-decoration: none;
     cursor: pointer;
+    margin-top: auto;
+    width: fit-content;
 }
 
 .session-list {

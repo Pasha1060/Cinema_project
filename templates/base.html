@@ -3,14 +3,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Кинотеатр{% endblock %}</title>
+    <title>{% block title %}КиноМесто{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
 <header class="site-header">
     <div class="container header-content">
-        <a href="{% url 'cinema:index' %}" class="logo">Кинотеатр</a>
+        <a href="{% url 'cinema:index' %}" class="logo">КиноМесто</a>
 
         <nav class="nav">
             <a href="{% url 'cinema:index' %}">Главная</a>
