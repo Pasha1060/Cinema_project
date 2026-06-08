@@ -42,7 +42,6 @@ class SeatConsumer(AsyncWebsocketConsumer):
                     'sender_channel_name': None,
                 }
             )
-        # При обновлении страницы очищаем старые временные выборы этой же вкладки
         #released_locks = await sync_to_async(release_seats_by_client)(
         #    self.session_id,
         #   self.client_id
@@ -61,8 +60,6 @@ class SeatConsumer(AsyncWebsocketConsumer):
         #            'sender_channel_name': None,
         #        }
         #    )
-
-        # Важно: список блокировок получаем уже после очистки
         locked_seats = await sync_to_async(get_locked_seats)(self.session_id)
 
         await self.send(text_data=json.dumps({
